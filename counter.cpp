@@ -5,16 +5,22 @@
 using namespace std;
 
 void Usage(char * progname);
-void PrintGreeting(string greeting , int start, int end);
-void GetMandN(const char * param,int & start,int & end);
+void PrintGreeting(string greeting, int start, int end);
+void GetMandN(const char * param, int & start, int & end);
+void GetHighAndLow(const char * param, int & low, int & high);
 
 int main(int argc, char * argv[]) {
 	string greeting = "hello";
 	int greetCount = 1;
 	bool reverse = false;
 	bool verbose = false;
+	bool help = false;
+
 	int charStart = 0;
 	int charEnd = -1;
+
+	string lowString;
+	string highString;
 	int low = 1;
 	int high = 10;
 	int step = 1;
@@ -23,8 +29,9 @@ int main(int argc, char * argv[]) {
 	while (i < argc) {
 		if (!strcmp(argv[i],"-h") or !strcmp(argv[i],"--help")) {
 			Usage(argv[0]);
+			help = true;
 			i++;
-		} else if (!strcmp(argv[i],"-g") or !strcmp(argv[i],"--greeting"))  {
+		} else if (!strcmp(argv[i],"-g") or !strcmp(argv[i],"--greeting")) {
 			i++;
 			if (i < argc) {
 				greeting = argv[i];
@@ -32,13 +39,21 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr <<"Error: " << argv[i-1] << " requires a string" << endl;
 			}
-		} else if (!strncmp(argv[i],"-g",2))  {
+		} else if (!strncmp(argv[i],"-g", 2))  {
 			greeting = argv[i];
-			greeting = greeting.substr(2,greeting.size());
+			greeting = greeting.substr(2, greeting.size());
 			i++;
-		} else if (!strncmp(argv[i],"--greeting=",11))  {
+		} else if (!strncmp(argv[i],"-b", 2))  {
+			lowString = argv[i];
+			low = stoi(lowString.substr(2, greeting.size()));
+			i++;
+		} else if (!strncmp(argv[i],"-t", 2))  {
+			highString = argv[i];
+			high = stoi(highString.substr(2, greeting.size()));
+			i++;
+		} else if (!strncmp(argv[i],"--greeting=", 11))  {
 			greeting = argv[i];
-			greeting = greeting.substr(11,greeting.size());
+			greeting = greeting.substr(11, greeting.size());
 			i++;
 		} else if (!strcmp(argv[i],"-m"))  {
 			i++;
@@ -48,7 +63,7 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-m requires an integer argument" << endl;
 			}
-		} else if (!strcmp(argv[i],"-x"))  {
+		} else if (!strcmp(argv[i], "-x"))  {
 			i++;
 			if (i < argc) {
 				GetMandN(argv[i],charStart,charEnd);
@@ -56,17 +71,24 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-x requires an argument" << endl;
 			}
-		} else if (!strncmp(argv[i],"--range=",8))  {
+		} else if (!strcmp(argv[i], "-l"))  {
+			i++;
+			if (i < argc) {
+				GetHighAndLow(argv[i], low, high);
+				i++;
+			} else {
+				cerr << "\t-t requires an argument" << endl;
+			}
+		} else if (!strncmp(argv[i], "--range=", 8))  {
 			string tmp = argv[i];
 			tmp = tmp.substr(8, string::npos);
-			GetMandN(tmp.c_str(),charStart,charEnd);
+			GetMandN(tmp.c_str(), charStart, charEnd);
 			i++;
-		} else if (!strcmp(argv[i],"-r") || !strcmp(argv[i], "--reverse")){
+		} else if (!strcmp(argv[i],"-r") || !strcmp(argv[i], "--reverse")) {
 			reverse = true;
 			i++;
 		// Needs fixed to allow -sn, --step=n
-		// Then write bottom, top, limit
-		} else if (!strcmp(argv[i],"-s"))  {
+		} else if (!strcmp(argv[i], "-s"))  {
 			i++;
 			if (i < argc) {
 				step = atoi(argv[i]);
@@ -74,7 +96,7 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-s requires an integer argument" << endl;
 			}
-		} else if (!strcmp(argv[i],"-v") || !strcmp(argv[i], "--verbose")){
+		} else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose")) {
 			verbose = true;
 			i++;
 		} else {
@@ -94,39 +116,76 @@ int main(int argc, char * argv[]) {
 
 	// Verbose mode
 	if (verbose) {
-	}
+		cout << "Low = " << low << endl;
+		cout << "High = " << high << endl;
+		cout << "Step = " << step << endl;
+		cout << "Reverse = ";
+		if (reverse)
+			cout << "Yes" << endl;
+		else
+			cout << "No" << endl;
+		cout << "Help = ";
+		if (help)
+			cout << "Yes" << endl;
+		else
+			cout << "No" << endl;
+		cout << "Verbose = Yes" << endl;
 
-	// perform a task.
-	if (reverse) {
-		string tmp;
-		for (size_t j=greeting.size()-1; j != 0; j--) {
-			tmp += greeting[j];
-		}
-		tmp += greeting[0];
-		greeting = tmp;
-	}
-
-	for (i=0;i<greetCount; i++) {
-		PrintGreeting(greeting, charStart, charEnd);
-	}
-
-	if (!reverse) {
-		// Count from low value to high value
-		for (int k=low; k<=high; k+=step) {
-			cout << k << ' ';
-		}
 	} else {
-		// Count from high value to low value
-		for (int k=high; k>=low; k-=step) {
-			cout << k << ' ';
+
+		// perform a task.
+		if (reverse) {
+			string tmp;
+			for (size_t j=greeting.size()-1; j != 0; j--) {
+				tmp += greeting[j];
+			}
+			tmp += greeting[0];
+			greeting = tmp;
 		}
+
+		/*
+		for (i=0;i<greetCount; i++) {
+			PrintGreeting(greeting, charStart, charEnd);
+		}
+		*/
+
+		if (!reverse) {
+			// Count from low value to high value
+			for (int k=low; k<=high; k+=step) {
+				cout << k << ' ';
+			}
+		} else {
+			// Count from high value to low value
+			for (int k=high; k>=low; k-=step) {
+				cout << k << ' ';
+			}
+		}
+		cout << endl;
 	}
-	cout << endl;
 
 	return 0;
 }
 
-void Usage(char * progname){
+void GetHighAndLow(const char* param, int & low, int & high) {
+	string tmp = param;
+
+	size_t pos;
+
+	pos = tmp.find(',');
+	if (pos == string::npos) {
+		high = -1;
+		low = atoi(param);
+	} else {
+		string first, second;
+		first = tmp.substr(0,pos);
+		low = atoi(tmp.c_str());
+		second = tmp.substr(pos+1,string::npos);
+		high = atoi(second.c_str());
+	}
+	return;
+}
+
+void Usage(char * progname) {
 	cout << "Usage: " << progname << endl;
 	cout << "\t-h --help: print a help message describing command line arguments" << endl;
 	cout << "\t-b n, --bottom=n: set the low value to be the integer n." << endl;
@@ -139,7 +198,7 @@ void Usage(char * progname){
 	return;
 }
 
-void PrintGreeting(string greeting , int start, int end){
+void PrintGreeting(string greeting, int & start, int & end){
 	int i;
 
 	if (end == -1 or end > int(greeting.size())) {
@@ -153,7 +212,7 @@ void PrintGreeting(string greeting , int start, int end){
 	return;
 }
 
-void GetMandN(const char * param,int & start,int & end){
+void GetMandN(const char * param, int & start, int & end){
 	string tmp = param;
 
 	size_t pos;
@@ -171,5 +230,3 @@ void GetMandN(const char * param,int & start,int & end){
 	}
 	return;
 }
-
-
