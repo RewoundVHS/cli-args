@@ -1,12 +1,9 @@
 #include <iostream>
 #include <string.h>
 
-
 using namespace std;
 
 void Usage(char * progname);
-void PrintGreeting(string greeting, int start, int end);
-void GetMandN(const char * param, int & start, int & end);
 void GetHighAndLow(const char * param, int & low, int & high);
 
 int main(int argc, char * argv[]) {
@@ -46,13 +43,6 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-l requires an argument" << endl;
 			}
-		/*
-		} else if (!strncmp(argv[i], "--range=", 8))  {
-			string tmp = argv[i];
-			tmp = tmp.substr(8, string::npos);
-			GetMandN(tmp.c_str(), charStart, charEnd);
-			i++;
-		*/
 		} else if (!strcmp(argv[i],"-r") || !strcmp(argv[i], "--reverse")) {
 			reverse = true;
 			i++;
@@ -76,8 +66,12 @@ int main(int argc, char * argv[]) {
 
 	}
 
+	if (low > high) {
+		cerr << "Low value greater than high value" << endl;
 	// Verbose mode
-	if (verbose) {
+	} else if (step <= 0) {
+		cerr << "Step negative or zero"	<< endl;
+	} else if (verbose) {
 		cout << "Low = " << low << endl;
 		cout << "High = " << high << endl;
 		cout << "Step = " << step << endl;
