@@ -7,13 +7,14 @@ void Usage(char * progname);
 void GetHighAndLow(const char * param, int & low, int & high);
 
 int main(int argc, char * argv[]) {
-	string greeting = "hello";
 	string argument;
 	bool reverse = false;
 	bool verbose = false;
 	bool help = false;
 	string lowString;
 	string highString;
+	string limitString;
+	string stepString;
 	int low = 1;
 	int high = 10;
 	int step = 1;
@@ -23,17 +24,51 @@ int main(int argc, char * argv[]) {
 
 		argument = argv[i];
 
-		if (!strcmp(argv[i],"-h") or !strcmp(argv[i],"--help")) {
+		if (!strcmp(argv[i], "-h") or !strcmp(argv[i], "--help")) {
 			Usage(argv[0]);
 			help = true;
 			i++;
-		} else if (!strncmp(argv[i],"-b", 2))  {
+		} else if (!strcmp(argv[i], "-b")) {
+			i++;
+			if (i < argc) {
+				low = atoi(argv[i]);
+				i++;
+			} else {
+				cerr << "\t-b requires an integer argument" << endl;
+			}
+		// Validate with nonintegers
+		} else if (!strncmp(argv[i], "-b", 2))  {
 			lowString = argv[i];
 			low = stoi(lowString.substr(2, argument.size()));
 			i++;
+		// Validate with nonintegers
+		} else if (!strncmp(argv[i], "--bottom=", 9)) {
+			lowString = argv[i];
+			low = stoi(lowString.substr(9, argument.size()));
+			i++;
+		} else if (!strcmp(argv[i], "-t")) {
+			i++;
+			if (i < argc) {
+				high = atoi(argv[i]);
+				i++;
+			} else {
+				cerr << "\t-t requires an integer argument" << endl;
+			}
+		// Validate with nonintegers
 		} else if (!strncmp(argv[i],"-t", 2))  {
 			highString = argv[i];
 			high = stoi(highString.substr(2, argument.size()));
+			i++;
+		// Validate with nonintegers
+		} else if (!strncmp(argv[i], "--top=", 6)) {
+			highString = argv[i];
+			high = stoi(highString.substr(6, argument.size()));
+			i++;
+		// Validate with nonintegers
+		} else if (!strncmp(argv[i], "-l", 2)) {
+			i++;
+			argument = argument.substr(2, argument.size());
+			GetHighAndLow(argument.c_str(), low, high);
 			i++;
 		} else if (!strcmp(argv[i], "-l"))  {
 			i++;
@@ -43,10 +78,15 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-l requires an argument" << endl;
 			}
-		} else if (!strcmp(argv[i],"-r") || !strcmp(argv[i], "--reverse")) {
+		// Validate with no further input
+		} else if (!strncmp(argv[i], "--limit=", 8)) {
+			i++;
+			limitString = argument.substr(8, argument.size());
+			GetHighAndLow(limitString.c_str(), low, high);
+			i++;
+		} else if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--reverse")) {
 			reverse = true;
 			i++;
-		// Needs fixed to allow -sn, --step=n
 		} else if (!strcmp(argv[i], "-s"))  {
 			i++;
 			if (i < argc) {
@@ -55,6 +95,15 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-s requires an integer argument" << endl;
 			}
+		} else if (!strncmp(argv[i], "-s", 2))  {
+			stepString = argv[i];
+			step = stoi(stepString.substr(2, argument.size()));
+			i++;
+		// Validate with nonintegers
+		} else if (!strncmp(argv[i], "--step=", 7)) {
+			stepString = argv[i];
+			step = stoi(stepString.substr(7, argument.size()));
+			i++;
 		} else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose")) {
 			verbose = true;
 			i++;
