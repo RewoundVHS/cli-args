@@ -24,10 +24,12 @@ int main(int argc, char * argv[]) {
 
 		argument = argv[i];
 
+		// Print help menu
 		if (!strcmp(argv[i], "-h") or !strcmp(argv[i], "--help")) {
 			Usage(argv[0]);
 			help = true;
 			i++;
+		// Set bottom value
 		} else if (!strcmp(argv[i], "-b")) {
 			i++;
 			if (i < argc) {
@@ -36,16 +38,15 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-b requires an integer argument" << endl;
 			}
-		// Validate with nonintegers
 		} else if (!strncmp(argv[i], "-b", 2))  {
 			lowString = argv[i];
 			low = stoi(lowString.substr(2, argument.size()));
 			i++;
-		// Validate with nonintegers
 		} else if (!strncmp(argv[i], "--bottom=", 9)) {
 			lowString = argv[i];
 			low = stoi(lowString.substr(9, argument.size()));
 			i++;
+		// Set top value
 		} else if (!strcmp(argv[i], "-t")) {
 			i++;
 			if (i < argc) {
@@ -54,17 +55,15 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-t requires an integer argument" << endl;
 			}
-		// Validate with nonintegers
 		} else if (!strncmp(argv[i],"-t", 2))  {
 			highString = argv[i];
 			high = stoi(highString.substr(2, argument.size()));
 			i++;
-		// Validate with nonintegers
 		} else if (!strncmp(argv[i], "--top=", 6)) {
 			highString = argv[i];
 			high = stoi(highString.substr(6, argument.size()));
 			i++;
-		// Validate with nonintegers
+		// Set upper and lower limits
 		} else if (!strncmp(argv[i], "-l", 2)) {
 			i++;
 			argument = argument.substr(2, argument.size());
@@ -78,15 +77,16 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-l requires an argument" << endl;
 			}
-		// Validate with no further input
 		} else if (!strncmp(argv[i], "--limit=", 8)) {
 			i++;
 			limitString = argument.substr(8, argument.size());
 			GetHighAndLow(limitString.c_str(), low, high);
 			i++;
+		// Set reverse mode
 		} else if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--reverse")) {
 			reverse = true;
 			i++;
+		// Set step
 		} else if (!strcmp(argv[i], "-s"))  {
 			i++;
 			if (i < argc) {
@@ -99,14 +99,15 @@ int main(int argc, char * argv[]) {
 			stepString = argv[i];
 			step = stoi(stepString.substr(2, argument.size()));
 			i++;
-		// Validate with nonintegers
 		} else if (!strncmp(argv[i], "--step=", 7)) {
 			stepString = argv[i];
 			step = stoi(stepString.substr(7, argument.size()));
 			i++;
+		// Set verbose mode
 		} else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose")) {
 			verbose = true;
 			i++;
+		// Invalid argument
 		} else {
 			cerr << "Unknown argument " << argv[i] << endl;
 			Usage(argv[0]);
@@ -115,11 +116,13 @@ int main(int argc, char * argv[]) {
 
 	}
 
+	// Check if low greater than high, if so, print error and exit
 	if (low > high) {
 		cerr << "Low value greater than high value" << endl;
-	// Verbose mode
+	// Check if step is negative or zero, if so print an error and exit
 	} else if (step <= 0) {
 		cerr << "Step negative or zero"	<< endl;
+	// Verbose mode, print a summary of all values set by arguments
 	} else if (verbose) {
 		cout << "Low = " << low << endl;
 		cout << "High = " << high << endl;
@@ -139,12 +142,18 @@ int main(int argc, char * argv[]) {
 		if (!reverse) {
 			// Count from low value to high value
 			for (int k=low; k<=high; k+=step) {
-				cout << k << ' ';
+				cout << k;
+				if (k < high) {
+					cout << ' ';
+				}
 			}
 		} else {
 			// Count from high value to low value
 			for (int k=high; k>=low; k-=step) {
-				cout << k << ' ';
+				cout << k;
+				if (k > low) {
+					cout << ' ';
+				}
 			}
 		}
 		cout << endl;
@@ -153,6 +162,7 @@ int main(int argc, char * argv[]) {
 	return 0;
 }
 
+// Finds the comma separated high and low values
 void GetHighAndLow(const char* param, int & low, int & high) {
 	string tmp = param;
 
@@ -172,6 +182,7 @@ void GetHighAndLow(const char* param, int & low, int & high) {
 	return;
 }
 
+// Print the help section, explains command line argument usage
 void Usage(char * progname) {
 	cout << "Usage: " << progname << endl;
 	cout << "\t-h --help: print a help message describing command line arguments" << endl;
