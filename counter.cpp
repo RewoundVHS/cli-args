@@ -64,11 +64,6 @@ int main(int argc, char * argv[]) {
 			high = stoi(highString.substr(6, argument.size()));
 			i++;
 		// Set upper and lower limits
-		} else if (!strncmp(argv[i], "-l", 2)) {
-			i++;
-			argument = argument.substr(2, argument.size());
-			GetHighAndLow(argument.c_str(), low, high);
-			i++;
 		} else if (!strcmp(argv[i], "-l"))  {
 			i++;
 			if (i < argc) {
@@ -77,8 +72,12 @@ int main(int argc, char * argv[]) {
 			} else {
 				cerr << "\t-l requires an argument" << endl;
 			}
-		} else if (!strncmp(argv[i], "--limit=", 8)) {
+		} else if (!strncmp(argv[i], "-l", 2)) {
 			i++;
+			argument = argument.substr(2, argument.size());
+			GetHighAndLow(argument.c_str(), low, high);
+			i++;
+		} else if (!strncmp(argv[i], "--limit=", 8)) {
 			limitString = argument.substr(8, argument.size());
 			GetHighAndLow(limitString.c_str(), low, high);
 			i++;
@@ -143,7 +142,7 @@ int main(int argc, char * argv[]) {
 			// Count from low value to high value
 			for (int k=low; k<=high; k+=step) {
 				cout << k;
-				if (k < high) {
+				if (k < high && (k+step <= high)) {
 					cout << ' ';
 				}
 			}
@@ -151,7 +150,7 @@ int main(int argc, char * argv[]) {
 			// Count from high value to low value
 			for (int k=high; k>=low; k-=step) {
 				cout << k;
-				if (k > low) {
+				if (k > low && (k-step >= low)) {
 					cout << ' ';
 				}
 			}
