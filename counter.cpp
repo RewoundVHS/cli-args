@@ -142,7 +142,7 @@ int main(int argc, char * argv[]) {
 			// Count from low value to high value
 			for (int k=low; k<=high; k+=step) {
 				cout << k;
-				if (k < high && (k+step <= high)) {
+				if (k+step <= high) {
 					cout << ' ';
 				}
 			}
@@ -150,7 +150,7 @@ int main(int argc, char * argv[]) {
 			// Count from high value to low value
 			for (int k=high; k>=low; k-=step) {
 				cout << k;
-				if (k > low && (k-step >= low)) {
+				if (k-step >= low) {
 					cout << ' ';
 				}
 			}
